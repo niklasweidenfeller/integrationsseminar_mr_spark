@@ -16,6 +16,11 @@ public class FriendCountMR {
 	public static class MyMapper extends Mapper<Object, Text, Text, Text> {
 
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
+			String[] keys = value.toString().split(",");
+			
+			context.write(new Text(keys[0]), new Text(keys[1]));
+			context.write(new Text(keys[1]), new Text(keys[0]));
+			
 		}
 	}
 
@@ -23,6 +28,11 @@ public class FriendCountMR {
 
 		public void reduce(Text key, Iterable<Text> values, Context context) 
 				throws IOException, InterruptedException {
+			HashSet<Text> hs = new HashSet<>();
+			for (Text val : values) {
+				hs.add(val);
+			}
+			context.write(key, new Text(""+hs.size()));
 		}
 	}
 
